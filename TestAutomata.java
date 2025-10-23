@@ -23,7 +23,10 @@ public class TestAutomata {
         
         iAC = new Automata(15, 0.8);
         iAC.putFire();
-        iAC.propagateFire(10);
+        while (iAC.isOnFire()) {
+            iAC.propagateFire(1);
+        }
+        
         
         for (double d=0.05; d<=1; d+=0.05) {
             int c = 0;

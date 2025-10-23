@@ -87,6 +87,10 @@ public class Automata {
         return false;
     }
     
+    // public boolean isNoFire(){
+    //     return !checkCell(5);
+    // }
+    
     /**
      * Tell if the forest is completly razed
      * 
@@ -185,7 +189,8 @@ public class Automata {
     private int nextState(int i, int j) {
         if (this.isOnFire(i, j)) {
             return -1;
-        } else if (this.isTree(i, j) && this.hasNeighborOnFire(i, j)) {
+        } 
+        if (this.isTree(i, j) && this.hasNeighborOnFire(i, j)) {
             return 5;
         } else {
             return this.matrix[i][j];
@@ -197,9 +202,20 @@ public class Automata {
      */
     private void propagateFire1() {
         int[][] nextMatrix = new int[this.dimension][this.dimension]; 
-        for (int y=0; y<this.dimension; y++) {
-            for (int x=0; x<this.dimension; x++) {
+
+        // apply nextState to every cell
+        for (int y=0; y < this.dimension; y++) {
+            for (int x=0; x < this.dimension; x++) {
                 nextMatrix[y][x] = this.nextState(y, x); //changes to previous positions do not affect the change to the current position
+            }
+        }
+
+        // safety Check
+        for (int i = 0; i < this.dimension; i++) {
+            for (int j = 0; j < this.dimension; j++) {
+                if (nextMatrix[i][j] == 5 && !hasNeighborOnFire(i, j)) {
+                    nextMatrix[i][j] = -1;
+                }
             }
         }
         this.matrix = nextMatrix; //note that here all positions are updated at the same time
@@ -211,11 +227,12 @@ public class Automata {
      * @param n number of hours
      */
     public void propagateFire(int n) {
+        
         for (int i=0; i<n; i++) {
             this.propagateFire1();
             this.displayForest();
             try {
-                Thread.sleep(5000); //adults need an average of 7 to 8 hours of sleep per day
+                Thread.sleep(500); //adults need an average of 7 to 8 hours of sleep per day
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
