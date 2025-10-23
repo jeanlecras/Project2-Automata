@@ -7,20 +7,23 @@ public class Automata {
     /**
      * Creates a forest of given size and density
      * 
-     * @param n size of the forest
-     * @param p tree density
+     * n size of the forest
+     * p tree density
      */
-    public Automata(int n, double p) throws IllegalArgumentException  {
-        if (n < 10) {
-            throw new IllegalArgumentException("The size of the matrix must be at least 10"); //a proper way to forbid an argument
-        } else {
-            this.dimension = n;
-            this.matrix = new int[n][n];
-        }
+
+    public Automata(int n, double p) {
+        if (n < 10) throw new IllegalArgumentException("Matrix size must be >= 10");
+        this.dimension = n;
+        this.matrix = new int[n][n];
+        
         for (int y=0; y<n; y++) {
             for (int x=0; x<n; x++) {
-                if (Math.random() < p) {
+                // ou 
+                // this.matrix[x][y] = (rand.nextDouble() < p) ? 1 : 0; 
+                if (Math.random() < p) { 
                     this.matrix[y][x] = 1; //this line has a probability of p to be executed
+                } else {
+                    this.matrix[y][x] = 0;
                 }
             }
         }
@@ -29,8 +32,9 @@ public class Automata {
     /**
      * Creates a forest of 10 m² given a tree density
      * 
-     * @param p tree density
+     * p tree density
      */
+
     public Automata(double p) {
         this.dimension = 10;
         this.matrix = new int[10][10];
@@ -38,6 +42,8 @@ public class Automata {
             for (int x=0; x<10; x++) {
                 if (Math.random() < p) {
                     this.matrix[y][x] = 1;
+                } else {
+                    this.matrix[y][x] = 0;
                 }
             }
         }
@@ -96,7 +102,7 @@ public class Automata {
      * @return the forest is on fire
      */
     public boolean isOnFire() {
-        return checkCell(5);
+        return checkCell(5); // rajouter this.
     }
     
     /**
@@ -106,7 +112,9 @@ public class Automata {
      * @param j x coordinate
      */
     public void putFire(int i, int j) {
-        this.matrix[i][j] = 5;
+        if (this.matrix[i][j] == 1) {
+            this.matrix[i][j] = 5;
+        }
     }
     
     /**
@@ -114,7 +122,12 @@ public class Automata {
      */
     public void putFire() {
         Random r = new Random(); //Creates a random number generator
-        this.putFire(r.nextInt(this.dimension), r.nextInt(this.dimension)); //draw an integer from the random number generator
+        int i, j;
+        do {
+            i = r.nextInt(this.dimension);
+            j = r.nextInt(this.dimension);
+        } while (this.matrix[i][j] != 1);
+        this.matrix[i][j] = 5;
     }
     
     /**
