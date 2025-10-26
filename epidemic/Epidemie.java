@@ -1,84 +1,69 @@
 import java.util.Random;
 
-public class Epidemie {
-    private int[][] matrix;
+public class Epidemia
+{
+    private char[][] matrix;
     private int dimension;
+    private double mortality;
     
-    // s sain
-    // v vaccined
-    // p polio
-    // i immune
-    // d dead
+    //Letters meaning:
+    //S sain (not vaccined)
+    //V vaccined (sain)
+    //  nobody
+    //X contamined/sick (after being sain)
+    //I immuned (after being contamined)
+    //D dead (after being contamined
+
     /**
-     * Creates a forest of given size and density
-     * 
-     * @param n size of the forest
-     * @param p tree density
+     * Constructor for objects of class Epidemie, without parameters
      */
-    public Epidemie(int n, double p, double vaccined_rate) throws IllegalArgumentException  {
-        if (n < 10) {
-            throw new IllegalArgumentException("The size of the matrix must be at least 10"); //a proper way to forbid an argument
-        } else {
-            this.dimension = n;
-            this.matrix = new int[n][n];
-        }
-        for (int y=0; y<n; y++) {
-            for (int x=0; x<n; x++) {
-                if (Math.random() < p) {
-                    this.matrix[y][x] = 1; //this line has a probability of p to be executed
-                }
-            }
-        }
-    }
-    
-    /**
-     * Creates a forest of 10 m² given a tree density
-     * 
-     * @param p tree density
-     */
-    public Epidemie(double p) {
+    public Epidemia()
+    {
         this.dimension = 10;
-        this.matrix = new int[10][10];
+        this.matrix = new char[10][10];
         for (int y=0; y<10; y++) {
-            for (int x=0; x<10; x++) {
-                if (Math.random() < p) {
-                    this.matrix[y][x] = 1;
+            for (char x=0; x<10; x++) {
+                if (Math.random() < 0.6) {
+                    if (Math.random() < 0.2) {
+                        this.matrix[y][x] = 'V';
+                    } else {
+                        this.matrix[y][x] = 'S';
+                    }
+                } else {
+                    this.matrix[y][x] = ' ';
                 }
             }
         }
     }
     
     /**
-     * Display the forest in the terminal
+     * Constructor for objects of class Epidemie, with parameters
      */
-    public void displayArea() {
-        String display = "";
-        for (int[] row: this.matrix) { //foreach loop
-            for (int cell: row) { //more intuitive than a for loop
-                switch(cell) {
-                    case 0:
-                        display += ".";
-                        break;
-                    case 1:
-                        display += "T";
-                        break;
-                    case 5:
-                        display += "O";
-                        break;
-                    case -1:
-                        display += "_";
-                        break; //coffee break
-                } 
+    public Epidemia(int dimension, double density, double vaccinated) {
+        this.dimension = dimension;
+        this.matrix = new char[dimension][dimension];
+        for (int y=0; y<10; y++) {
+            for (char x=0; x<10; x++) {
+                if (Math.random() < density) {
+                    if (Math.random() < vaccinated) {
+                        this.matrix[y][x] = 'V';
+                    } else {
+                        this.matrix[y][x] = 'S';
+                    }
+                } else {
+                    this.matrix[y][x] = ' ';
+                }
             }
-            display += "\n"; //store multiple rows
         }
-        System.out.println(display); //displays the entire forest at once
     }
     
-    private boolean checkCell(int value) {//generalized method to check something at a position
-        for (int[] row: this.matrix) { 
-            for (int cell: row) { 
-                if (cell == value) {
+    /**
+     * Tell if the matrix contains at least 1 of the given state
+     */
+    private boolean hasOne(char state) {
+        for (char[] row : this.matrix) {
+            for (char cell : row) {
+                if (cell == state){
                     return true;
                 }
             }
@@ -87,130 +72,129 @@ public class Epidemie {
     }
     
     /**
-     * Tell if the forest is completly razed
-     * 
-     * @return completly razed
+     * Initiate a disease by setting a contamined person at a given position, set the mortality of the disease
      */
-    public boolean isRazed() {
-        return !checkCell(1); // returns the negation of 'has a tree'
+    public void startDisease(double mortality, int y, int x) {//TODO throw Exception when cell yx isn't S ?
+        this.mortality = mortality;
+        this.matrix[y][x]='X';
     }
     
     /**
-     * Tell if the forest has been set on fire
-     * 
-     * @return the forest is on fire
+     * Iniate a disease by contaming one random individual
      */
-    public boolean isOnFire() {
-        return checkCell(5);
+    public void startDisease() {
+        Random r = new Random();
+        int randY, randX;
+        do {
+            randY = r.nextInt(this.dimension); 
+            randX = r.nextInt(this.dimension);
+        } while (this.matrix[randY][randX]!='S');
+        startDisease(0.1, randY, randX);
     }
     
     /**
-     * Put fire in the forest at given coordinates
-     * 
-     * @param i y coordinate
-     * @param j x coordinate
+     * Tell if there is contamined individual next to the given position
      */
-    public void putFire(int i, int j) {
-        this.matrix[i][j] = 5;
-    }
-    
-    /**
-     * Put fire in the forest at a random position
-     */
-    public void putFire() {
-        Random r = new Random(); //Creates a random number generator
-        this.putFire(r.nextInt(this.dimension), r.nextInt(this.dimension)); //draw an integer from the random number generator
-    }
-    
-    /**
-     * Tell if a tree is a present at a given position
-     * 
-     * @param i y coordinate
-     * @param j x coordinate
-     * @return a tree is here
-     */
-    private boolean isTree(int i, int j) {
-        return this.matrix[i][j]==1;
-    }
-    
-    /**
-     * Tell if a tree is on fire at a given position
-     * 
-     * @param i y coordinate
-     * @param j x coordinate
-     * @return a tree is on fire here
-     */
-    private boolean isOnFire(int i, int j) {
-        return this.matrix[i][j]==5;
-    }
-    
-    /**
-     * Tell if the given position is next to a tree on fire
-     * 
-     * @param i y coordinate
-     * @param j x coordinate
-     * @return a tree on fire is close from here
-     */
-    private boolean hasNeighborOnFire(int i, int j) {
-        if (i > 0 && isOnFire(i-1, j)) {//check down
+    private boolean hasIllNeighbor(int y, int x) {
+        if (y>0 && this.matrix[y-1][x]=='X') {
             return true;
         }
-        if (i < this.dimension-1 && isOnFire(i+1, j)) {//check up
+        if (y<this.dimension-1 && this.matrix[y+1][x]=='X') {
             return true;
         }
-        if (j > 0 && isOnFire(i, j-1)) {//check left
+        if (x>0 && this.matrix[y][x-1]=='X') {
             return true;
         }
-        if (j < this.dimension-1 && isOnFire(i, j+1)) {//check right
+        if (x<this.dimension-1 && this.matrix[y][x+1]=='X') {
             return true;
         }
         return false;
     }
     
     /**
-     * Predicts what will be at a given position in 1 hour
-     * 
-     * @param i y coordinate
-     * @param j x coordinate
-     * @return the prediction
+     * Determine the next state of an individual at a give position
      */
-    private int nextState(int i, int j) {
-        if (this.isOnFire(i, j)) {
-            return -1;
-        } else if (this.isTree(i, j) && this.hasNeighborOnFire(i, j)) {
-            return 5;
+    private char nextState(int y, int x) {
+        if (this.matrix[y][x]=='S' && hasIllNeighbor(y, x)) {
+            return 'X';
+        } else if (this.matrix[y][x]=='X') {
+            if (Math.random() < this.mortality) {
+                return 'D';
+            } else {
+                return 'I';
+            }
         } else {
-            return this.matrix[i][j];
+            return this.matrix[y][x];
         }
     }
     
     /**
-     * Advances the forest's time by 1 hour
+     * Display a representation of the area
      */
-    private void propagateFire1() {
-        int[][] nextMatrix = new int[this.dimension][this.dimension]; 
+    public void displayEpidemia() {
+        String display = "";
+        for (char[] row : this.matrix) {
+            for (char cell : row) {
+                display += cell;
+            }
+            display += "\n";
+        }
+        System.out.println(display);
+    }
+    
+    /**
+     * pass 1 day : Set every individual to their next state
+     */
+    private void nextDay() {
+        char[][] nextMatrix = new char[this.dimension][this.dimension];
         for (int y=0; y<this.dimension; y++) {
             for (int x=0; x<this.dimension; x++) {
-                nextMatrix[y][x] = this.nextState(y, x); //changes to previous positions do not affect the change to the current position
+                nextMatrix[y][x] = nextState(y,x);
             }
         }
-        this.matrix = nextMatrix; //note that here all positions are updated at the same time
-    }
-    
-    /**
-     * Advances the forest's time by a number of hours
-     * 
-     * @param n number of hours
-     */
-    public void propagateFire(int n) {
-        for (int i=0; i<n; i++) {
-            this.propagateFire1();
-            this.displayArea();
-            try {
-                Thread.sleep(5000); //adults need an average of 7 to 8 hours of sleep per day
+        this.matrix = nextMatrix;
+        displayEpidemia();
+        try {
+                Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
+    }
+    
+    /**
+     * pass n days
+     */
+    private void passDays(int n) {
+        for (int i=0; i<n; i++) {
+            nextDay();
         }
+    }
+    
+    /**
+     * start the disease and pass days until the disease is gone
+     */
+    private void simulation() {
+        startDisease();
+        while (hasOne('X')) {
+            nextDay();
+        }
+    }
+    
+    /**
+     * start the disease (and set the mortality) and pass days until the disease is gone
+     */
+    private void simulation(double mortality) {
+        startDisease(mortality, 5, 5);
+        while (hasOne('X')) {
+            nextDay();
+        }
+    }
+    
+    /**
+     * Tests
+     */
+    public static void main(String[] args) {
+        Epidemia epi1 = new Epidemia();
+        epi1.simulation();
     }
 }
