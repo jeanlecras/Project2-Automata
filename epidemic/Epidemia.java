@@ -76,9 +76,9 @@ public class Epidemia
      */
     public void startDisease(double mortality, int y, int x) {
         // check if the cell is 'S'
-        if (this.matrix[x][y] != 'S') {
+        if (this.matrix[y][x] != 'S') {
             throw new IllegalArgumentException(
-                "La cellule (" + y + ", " + x + ") n'est pas susceptible ('S'), impossible de démarrer la maladie ici."
+                "La cellule (" + y + ", " + x + ") n'est pas sain ('S'), impossible de démarrer la maladie ici."
             );
         }
 
@@ -203,17 +203,41 @@ public class Epidemia
      * Tests
      */
     public static void main(String[] args) {
-        Epidemia epi1 = new Epidemia();
-        Epidemia epi2 = new Epidemia(50, 0.8, 0.5);
-        epi1.simulation();
-        epi2.simulation();
+        //Epidemia epi1 = new Epidemia();
+        //Epidemia epi2 = new Epidemia(50, 0.8, 0.5);
+        //epi1.simulation();
+        //epi2.simulation();
 
 
         // test of method hasOne
-        System.out.println(epi1.hasOne('I'));
-        System.out.println(epi2.hasOne('I'));
+        // System.out.println(epi1.hasOne('I'));
+        // System.out.println(epi2.hasOne('I'));
 
         // test of method StartDisease
+            // test 1 - on cell 'S'
+        Epidemia startTest1 = new Epidemia(5, 1.0, 0.0);
+        startTest1.startDisease(0.1, 2, 2);
+        
+        if (startTest1.matrix[2][2] == 'X') {
+            System.out.println("Test 1 réussi : la cellule (2,2) est bien devenue 'X'");
+        } else {
+            System.out.println("Test 1 échoué : la cellule (2,2) n'est pas 'X'");
+        }
 
+            // test 2 - not on cell 'S'
+        Epidemia startTest2 = new Epidemia(5, 1.0, 0.0);
+        startTest2.matrix[1][1] = 'V'; // we change one case to have one invalid cell
+
+        try{
+            startTest2.startDisease(0.1, 1, 1);
+            System.out.println("Test 2 échoué : aucune exception levée alors que la case n’est pas 'S'");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Test 2 réussi : exception levée comme prévu -> " + e.getMessage());
+        }
+
+            // test 3 - startDisease() random
+        Epidemia startTest3 = new Epidemia(5, 1.0, 0.0);
+        startTest3.startDisease(); // random version
+        System.out.println(startTest3.hasOne('X'));
     }
 }
