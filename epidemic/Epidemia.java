@@ -135,7 +135,7 @@ public class Epidemia
         if (this.matrix[y][x]=='S' && hasIllNeighbor(y, x)) {
             return 'X';
         } else if (this.matrix[y][x]=='X') {
-            if (Math.random() < this.mortality) { // under this.mortality is dead else imunited 
+            if (Math.random() < this.mortality) { // under this.mortality is dead else immunited 
                 return 'D';
             } else {
                 return 'I';
@@ -150,9 +150,9 @@ public class Epidemia
      */
     public void displayEpidemia() {
         String display = "";
-        for (char[] row : this.matrix) {
-            for (char cell : row) {
-                display += cell;
+        for (char[] row : this.matrix) { // parcourt chaque ligne de la matrice
+            for (char cell : row) { // parcours chaque cellule de la ligne 
+                display += cell; // add cell in display
             }
             display += "\n";
         }
@@ -211,7 +211,8 @@ public class Epidemia
 
     /**
      * j'ajoute deux methode pour pouvoir tester rapidement les methode depuis le main
-     * 
+     * modifier et acceder a la matrix qui est privé 
+     * getter et setter
      */
 
     public char[][] getMatrix() {
