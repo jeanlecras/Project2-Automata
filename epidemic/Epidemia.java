@@ -17,20 +17,19 @@ public class Epidemia
     /**
      * Constructor for objects of class Epidemie, without parameters
      */
-    public Epidemia()
-    {
-        this.dimension = 10;
-        this.matrix = new char[this.dimension][this.dimension];
-        for (int y=0; y<this.dimension; y++) {
-            for (int x=0; x<this.dimension; x++) {
-                if (Math.random() < 0.6) {
-                    if (Math.random() < 0.2) {
+    public Epidemia() {
+        this.dimension = 10; // default parameter
+        this.matrix = new char[this.dimension][this.dimension]; // creation of a matrix with y = dimension and x = dimension
+        for (int y=0; y<this.dimension; y++) { // creation of line 
+            for (int x=0; x<this.dimension; x++) { // creation of column
+                if (Math.random() < 0.6) { // if Math.random under 0.6 place 'S'
+                    if (Math.random() < 0.2) { // same with 'V'
                         this.matrix[y][x] = 'V'; 
                     } else {
                         this.matrix[y][x] = 'S';
                     }
                 } else {
-                    this.matrix[y][x] = ' ';
+                    this.matrix[y][x] = ' '; 
                 }
             }
         }
@@ -61,9 +60,9 @@ public class Epidemia
      * Tell if the matrix contains at least 1 of the given state
      */
     private boolean hasOne(char state) {
-        for (char[] row : this.matrix) {
-            for (char cell : row) {
-                if (cell == state){
+        for (char[] row : this.matrix) { // read the matrix line by line
+            for (char cell : row) { // read each cell in each row 
+                if (cell == state){ 
                     return true;
                 }
             }
@@ -104,16 +103,16 @@ public class Epidemia
      * Tell if there is contamined individual next to the given position
      */
     private boolean hasIllNeighbor(int y, int x) {
-        if (y>0 && this.matrix[y-1][x]=='X') {
+        if (y>0 && this.matrix[y-1][x]=='X') { // cellule au dessus 
             return true;
         }
-        if (y<this.dimension-1 && this.matrix[y+1][x]=='X') {
+        if (y<this.dimension-1 && this.matrix[y+1][x]=='X') { // cellule en dessous
             return true;
         }
-        if (x>0 && this.matrix[y][x-1]=='X') {
+        if (x>0 && this.matrix[y][x-1]=='X') { // cellule a gauche
             return true;
         }
-        if (x<this.dimension-1 && this.matrix[y][x+1]=='X') {
+        if (x<this.dimension-1 && this.matrix[y][x+1]=='X') { // cellule a droite
             return true;
         }
         return false;
@@ -136,7 +135,7 @@ public class Epidemia
         if (this.matrix[y][x]=='S' && hasIllNeighbor(y, x)) {
             return 'X';
         } else if (this.matrix[y][x]=='X') {
-            if (Math.random() < this.mortality) {
+            if (Math.random() < this.mortality) { // under this.mortality is dead else imunited 
                 return 'D';
             } else {
                 return 'I';
