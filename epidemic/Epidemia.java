@@ -20,12 +20,12 @@ public class Epidemia
     public Epidemia()
     {
         this.dimension = 10;
-        this.matrix = new char[10][10];
-        for (int y=0; y<10; y++) {
-            for (char x=0; x<10; x++) {
+        this.matrix = new char[this.dimension][this.dimension];
+        for (int y=0; y<this.dimension; y++) {
+            for (int x=0; x<this.dimension; x++) {
                 if (Math.random() < 0.6) {
                     if (Math.random() < 0.2) {
-                        this.matrix[y][x] = 'V';
+                        this.matrix[y][x] = 'V'; 
                     } else {
                         this.matrix[y][x] = 'S';
                     }
@@ -42,8 +42,8 @@ public class Epidemia
     public Epidemia(int dimension, double density, double vaccinated) {
         this.dimension = dimension;
         this.matrix = new char[dimension][dimension];
-        for (int y=0; y<10; y++) {
-            for (char x=0; x<10; x++) {
+        for (int y=0; y<this.dimension; y++) {
+            for (int x=0; x<this.dimension; x++) {
                 if (Math.random() < density) {
                     if (Math.random() < vaccinated) {
                         this.matrix[y][x] = 'V';
@@ -74,7 +74,15 @@ public class Epidemia
     /**
      * Initiate a disease by setting a contamined person at a given position, set the mortality of the disease
      */
-    public void startDisease(double mortality, int y, int x) {//TODO throw Exception when cell yx isn't S ?
+    public void startDisease(double mortality, int y, int x) {
+        // check if the cell is 'S'
+        if (this.matrix[x][y] != 'S') {
+            throw new IllegalArgumentException(
+                "La cellule (" + y + ", " + x + ") n'est pas susceptible ('S'), impossible de démarrer la maladie ici."
+            );
+        }
+
+        // if all is good, we apply the changements
         this.mortality = mortality;
         this.matrix[y][x]='X';
     }
@@ -85,11 +93,11 @@ public class Epidemia
     public void startDisease() {
         Random r = new Random();
         int randY, randX;
-        do {
+        do { // choose random cell in matrix while the cell is 'S' if isn't 'S' we need to continues to choose another cell randomly
             randY = r.nextInt(this.dimension); 
             randX = r.nextInt(this.dimension);
         } while (this.matrix[randY][randX]!='S');
-        startDisease(0.1, randY, randX);
+        startDisease(0.1, randY, randX); // apply the letter 'X' in the cell choose randomly 
     }
     
     /**
@@ -165,6 +173,7 @@ public class Epidemia
      * pass n days
      */
     private void passDays(int n) {
+
         for (int i=0; i<n; i++) {
             nextDay();
         }
@@ -195,6 +204,16 @@ public class Epidemia
      */
     public static void main(String[] args) {
         Epidemia epi1 = new Epidemia();
+        Epidemia epi2 = new Epidemia(50, 0.8, 0.5);
         epi1.simulation();
+        epi2.simulation();
+
+
+        // test of method hasOne
+        System.out.println(epi1.hasOne('I'));
+        System.out.println(epi2.hasOne('I'));
+
+        // test of method StartDisease
+
     }
 }
